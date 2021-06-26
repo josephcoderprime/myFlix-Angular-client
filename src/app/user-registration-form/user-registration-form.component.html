@@ -1,9 +1,10 @@
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>Sign up!</mat-card-title>
+<mat-card class="registration-card">
+  <mat-card-header class="registration-header">
+    <mat-card-title>Sign Up!</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <form>
+    <mat-spinner *ngIf="isLoading" class="registration-spinner" color="primary" diameter="35"></mat-spinner>
+    <form class="registration-form-container">
       <mat-form-field>
         <input matInput [(ngModel)]="userData.Username" placeholder="Username" type="text" name="Username" required>
       </mat-form-field>
@@ -12,6 +13,9 @@
       </mat-form-field>
       <mat-form-field>
         <input matInput [(ngModel)]="userData.Email" type="email" placeholder="Email" name="Email" required>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput [(ngModel)]="userData.Birthday" type="date" placeholder="Birthday" name="Birthday">
       </mat-form-field>
     </form>
   </mat-card-content>
