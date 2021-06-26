@@ -1,8 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { UserLoginService } from '../fetch-api-data.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+
+// API call
+import { FetchApiDataService } from '../fetch-api-data.service';
+
+// Angular material
+import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-user-login-form',
@@ -10,33 +15,35 @@ import { Router } from '@angular/router';
   styleUrls: ['./user-login-form.component.scss']
 })
 export class UserLoginFormComponent implements OnInit {
+  isLoading = false;
 
   @Input() userData = { Username: '', Password: '' };
 
   constructor(
-    public fetchApiData: UserLoginService,
+    public fetchApiData: FetchApiDataService,
     public dialogRef: MatDialogRef<UserLoginFormComponent>,
     public snackBar: MatSnackBar,
-    public router: Router,
+    public router: Router
   ) { }
 
   ngOnInit(): void { }
 
   /**
-   * Function sending user login form input to database to authenticate user credentials
+   * login user
    */
   loginUser(): void {
-    this.fetchApiData.userLogin(this.userData).subscribe(response => {
+    this.isLoading = true;
+    this.fetchApiData.userLogin(this.userData).subscribe((response) => {
+      this.isLoading = true;
       this.dialogRef.close();
-      console.log(response);
-      localStorage.setItem('user', response.user._id);
+      localStorage.setItem('user', response.user.Username);
       localStorage.setItem('token', response.token);
-
-      this.snackBar.open('user logged in successfully', 'OK', {
+      this.snackBar.open('User logged in successfully!', 'OK', {
         duration: 2000
       });
       this.router.navigate(['movies']);
-    }, response => {
+    }, (response) => {
+      this.isLoading = true;
       console.log(response);
       this.snackBar.open(response, 'OK', {
         duration: 2000
