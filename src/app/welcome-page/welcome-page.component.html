@@ -1,11 +1,15 @@
-<div class="main-page" style="margin: 5rem auto; text-align: center;">
-  <h1 style="font-size: 30px; margin-bottom: 3rem;">
-    Welcome to myMusicalFlix!
-  </h1>
-  <button mat-raised-button (click)="openUserRegistrationDialog()" style="margin-right: 10px;" color="primary">
-    Sign Up
-  </button>
-  <button mat-raised-button (click)="openUserLoginDialog()" style="margin-right: 10px;" color="primary">
-    Sign In
-  </button>
+<div class="welcome-container">
+  <div class="welcome-title">
+    <h1>
+      Welcome to filmFlix
+    </h1>
+  </div>
+  <div class="btn-container">
+    <button mat-raised-button (click)="openUserRegistrationDialog()" color="primary" aria-label="Sign up button">
+      Sign Up
+    </button>
+    <button mat-raised-button (click)="openUserLoginDialog()" color="accent" aria-label="Login button">
+      Login
+    </button>
+  </div>
 </div>
