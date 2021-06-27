@@ -1,75 +1,58 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 
-// API Call
+import { Router } from '@angular/router';
 import { FetchApiDataService } from '../fetch-api-data.service';
 
-// Angular Material
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
-// Component
 import { UserProfileUpdateComponent } from '../user-profile-update/user-profile-update.component';
-import { UserProfileDeleteComponent } from '../user-profile-delete/user-profile-delete.component';
 
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.scss']
+  styleUrls: ['./user-profile.component.css'],
 })
-export class UserProfileComponent implements OnInit {
-  @Input() userData = { Username: '', Password: '', Email: '', Birthday: '' };
 
+/**
+ * This component renders the User Profile view.
+ */
+export class UserProfileComponent implements OnInit {
   user: any = {};
-  movies: any = [];
+  movies: any[] = [];
   favorites: any = [];
 
-  /**
-   * @param fetchApiData
-   * @param dialog
-   * @param snackBar
-   * @param router
-   */
   constructor(
     public fetchApiData: FetchApiDataService,
-    public dialog: MatDialog,
+    public router: Router,
     public snackBar: MatSnackBar,
-    private router: Router
+    public dialog: MatDialog
   ) { }
 
+  /**
+   * This method will run the getUser method after the User Profile Component is initialised and rendered.
+   * @returns User object.
+   */
   ngOnInit(): void {
     this.getUser();
   }
 
   /**
-  * Updates Profile
-  **/
-  editUserData(): void {
-    this.dialog.open(UserProfileUpdateComponent, {
-      width: '350px'
-    });
-  }
-
-  /**
-  * Delete Profile
-  **/
-  deleteUser(): void {
-    this.dialog.open(UserProfileDeleteComponent);
-  }
-
-  /**
-   * get user data
+   * This method will contact an external API and receive a User object and an array of movie objects.
+   * @returns User object and array of movie objects.
    */
   getUser(): void {
-    const user = localStorage.getItem('user');
-    this.fetchApiData.getUser(user).subscribe((res: any) => {
+    this.fetchApiData.getUser().subscribe((res: any) => {
       this.user = res;
       this.getMovies();
     });
   }
 
   /**
-   * retrieve all favorited movies
+   * This method will contact an external API,
+   * receive an array of movie objects and store them in state,
+   * and then filter it.
+   * @returns array of movie objects.
    */
   getMovies(): void {
     this.fetchApiData.getAllMovies().subscribe((res: any) => {
@@ -79,9 +62,9 @@ export class UserProfileComponent implements OnInit {
   }
 
   /**
-   * removes movie from user's list of favorites
-   * @param movie_id
-   * @returns
+   * This method will use the stored array of movie objects
+   * and filter it according to the FavoriteMovies array.
+   * @returns array of movie objects.
    */
   filterFavorites(): void {
     this.movies.forEach((movie: any) => {
@@ -93,17 +76,51 @@ export class UserProfileComponent implements OnInit {
   }
 
   /**
-   * delete favorites from user
+   * This method will contact an external API,
+   * and delete the movie id from the favorites array
    */
   removeFavorites(id: string, title: string): void {
-    this.fetchApiData.removeFavorite(id).subscribe(() => {
-      this.snackBar.open(`${title} has been removed from your favorites!`, 'OK', {
-        duration: 2000
-      });
+    this.fetchApiData.deleteFavoriteMovie(id).subscribe(() => {
+      this.snackBar.open(
+        `${title} has been removed from your favourites!`,
+        'OK',
+        {
+          duration: 2000,
+        }
+      );
       setTimeout(function () {
         window.location.reload();
-      }, 2000);
+      }, 1000);
     });
   }
 
+  /**
+   * This method will contact an external API,
+   * and delete the User from the Users array.
+   */
+  deleteUser(): void {
+    let check = confirm(
+      'This will delete your profile! Are you sure you want to continue?'
+    );
+    if (check) {
+      this.fetchApiData.deleteUser().subscribe(() => {
+        localStorage.clear();
+        this.router.navigate(['welcome']);
+        this.snackBar.open('Profile deleted', 'OK', {
+          duration: 2000,
+        });
+      });
+    } else {
+      window.location.reload();
+    }
+  }
+
+  /**
+   * This method will activate dialog/modal which enables the User to update their profile data.
+   */
+  profileUpdateDialog(): void {
+    this.dialog.open(UserProfileUpdateComponent, {
+      panelClass: 'update-dialog',
+    });
+  }
 }
