@@ -1,42 +1,60 @@
 <app-nav-bar></app-nav-bar>
-<div class="profile-container">
-  <!-- Update Profile -->
-  <section>
-    <mat-card class="update-container">
-      <mat-card-header class="update-header">
-        <mat-card-title>Update Profile</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-      </mat-card-content>
-      <mat-card-actions class="update-form--action">
-        <button aria-label="button that submits form to update user account" class="btn-update-account"
-          mat-raised-button (click)="editUserData()" color="primary">
-          Update
-        </button>
-        <button aria-label="button that removes user account" class="btn-remove-account" mat-stroked-button
-          (click)="deleteUser()" color="primary">
-          Remove Account
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </section>
+<div class='profile-card-container'>
+  <div class='profile-card-wrapper'>
+    <div class="centeriser">
 
-  <!-- Favorites -->
-  <section>
-    <h2>Your Favorite Movies:</h2>
-    <div class="favorite-movies-container">
-      <mat-card class="favoriteMovie-card-container" *ngFor='let favorite of favorites'>
-        <mat-card-header class="favoriteMovie-card-header">
-          <mat-card-title class="favoriteMovie-card-title">{{favorite.Title}}</mat-card-title>
-          <mat-card-subtitle>Directed by: {{favorite.Director.Name}}</mat-card-subtitle>
-        </mat-card-header>
-        <img src={{favorite.ImagePath}} alt={{favorite.Title}} />
-        <mat-card-actions class="favoriteMovie-card-actions-container">
-          <button mat-button color='basic' (click)='removeFavorites(favorite._id, favorite.Title)'>
-            Remove Favorite
+      <section class="profile-info">
+        <h1>Profile Info</h1>
+        <div class="general-info">
+
+          <p style="margin: 0;">Username</p>
+          <p>{{user.Username}}</p>
+          <!-- <p>Password: ********</p> -->
+          <p style="margin: 0;">Email</p>
+          <p>{{user.Email}}</p>
+          <p style="margin: 0;">Birthday</p>
+          <p>{{user.Birthday | date: "dd/MM/yyyy":"UTC"}}</p>
+        </div>
+        <mat-card-actions class="profile-button-container">
+          <button id="update-prof-dialog-button" mat-raised-button (click)='profileUpdateDialog()'>
+            Open Update Profile Dialog
           </button>
+
         </mat-card-actions>
-      </mat-card>
+        <div class="delete-account-container">
+          <mat-icon id="delete-icon">
+            delete_outline
+          </mat-icon>
+          <button id="delete-account-button" mat-button (click)='deleteUser()'>
+            Delete Account
+          </button>
+        </div>
+      </section>
+
+      <section class="fav-movies">
+        <h1>My Favorite Movies</h1>
+        <div class='fav-movies-list'>
+          <div class='favorites-cards' *ngFor='let favorite of favorites'>
+            <div class="card-header">
+              <mat-card-title class="white-title">{{favorite.Title}}</mat-card-title>
+              <mat-card-subtitle class="gray-subtitle">
+                {{favorite.Director.Name}}</mat-card-subtitle>
+            </div>
+            <!-- <img src={{favorite.ImagePath}} alt={{favorite.Title}} /> -->
+            <mat-card-actions>
+              <mat-icon style="color: white;font-weight: 300; cursor: pointer;"
+                (click)='removeFavorites(favorite._id, favorite.Title)'>
+                delete_outline
+              </mat-icon>
+            </mat-card-actions>
+          </div>
+
+        </div>
+
+      </section>
+
+
     </div>
-  </section>
+
+  </div>
 </div>
