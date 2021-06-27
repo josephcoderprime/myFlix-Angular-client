@@ -1,22 +1,27 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Router } from '@angular/router';
 
-// API call
+import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
+
+// Use this import to close the dialog on success
+import { MatDialogRef } from '@angular/material/dialog';
+
 import { FetchApiDataService } from '../fetch-api-data.service';
 
-// Angular material
-import { MatDialogRef } from '@angular/material/dialog';
+// This is for mini notifications like alert is in JS
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-login-form',
   templateUrl: './user-login-form.component.html',
-  styleUrls: ['./user-login-form.component.scss']
+  styleUrls: ['./user-login-form.component.css'],
+  encapsulation: ViewEncapsulation.None,
 })
-export class UserLoginFormComponent implements OnInit {
-  isLoading = false;
 
+/**
+ * This component renders the Log In form.
+ */
+export class UserLoginFormComponent implements OnInit {
   @Input() userData = { Username: '', Password: '' };
 
   constructor(
@@ -29,25 +34,27 @@ export class UserLoginFormComponent implements OnInit {
   ngOnInit(): void { }
 
   /**
-   * login user
+   * This method sends the form inputs to the backend
+   * and saves the user and token from the server response to local storage
    */
-  loginUser(): void {
-    this.isLoading = true;
-    this.fetchApiData.userLogin(this.userData).subscribe((response) => {
-      this.isLoading = true;
-      this.dialogRef.close();
-      localStorage.setItem('user', response.user.Username);
-      localStorage.setItem('token', response.token);
-      this.snackBar.open('User logged in successfully!', 'OK', {
-        duration: 2000
-      });
-      this.router.navigate(['movies']);
-    }, (response) => {
-      this.isLoading = true;
-      console.log(response);
-      this.snackBar.open(response, 'OK', {
-        duration: 2000
-      });
-    });
+  logInUser(): void {
+    this.fetchApiData
+      .userLogin(this.userData.Username, this.userData.Password)
+      .subscribe(
+        (result) => {
+          localStorage.setItem('user', result.user.Username);
+          localStorage.setItem('token', result.token);
+          this.dialogRef.close(); // This will close the modal on success!
+          this.snackBar.open('Log In Successful.', 'OK', {
+            duration: 5000,
+          });
+          this.router.navigate(['movies']);
+        },
+        (result) => {
+          this.snackBar.open(result, 'OK', {
+            duration: 5000,
+          });
+        }
+      );
   }
 }
